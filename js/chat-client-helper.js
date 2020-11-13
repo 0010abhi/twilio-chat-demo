@@ -24,18 +24,31 @@ export default class ChatClientHelper {
     this.client = null;
   }
 
-  createChannel(channelOptions) {
-    console.warn('cahnnel op', channelOptions)
-    let that = this;
-    return TwilioChatClient.createChannel(channelOptions)
-    .then((channel) => {
-      console.warn('Created general channel:');
-      console.log(channel);
-      that.log.info('create channerl', 'Catch', err);
-    }).catch((err) => {
-      that.log.info('create channerl', 'Catch', err);
-    });
-  }
+  // createChannel(channelOptions) {
+  //   console.warn('cahnnel op', channelOptions)
+  //   let that = this;
+  //   return TwilioChatClient.createChannel(channelOptions)
+  //     .then((channel) => {
+  //       console.warn('Created general channel:');
+  //       console.log(channel);
+  //       that.log.info('create channerl', 'Catch', err);
+  //     }).catch((err) => {
+  //       that.log.info('create channerl', 'Catch', err);
+  //     });
+  // }
+
+  // getPublicChannels() {
+  //   alert('get chanel');
+  //   console.warn('get chanel', JSON.stringify(this.client));
+  //   // return this.client.getPublicChannelDescriptors().then(function(paginator) {
+  //   //   alert('res');
+  //   //   for (i = 0; i < paginator.items.length; i++) {
+  //   //     const channel = paginator.items[i];
+  //   //     console.warn('Channel: ' + channel.friendlyName);
+  //   //   }
+  //   //   return paginator;
+  //   // }).catch(err => {console.warn('Catch pub chan', err)});
+  // }
 
   login(identity, pushChannel, registerForPushCallback, showPushCallback) {
     let that = this;
@@ -48,8 +61,7 @@ export default class ChatClientHelper {
           .then(function (token) {
             that.log.info('ChatClientHelper', 'got chat token', token);
             return TwilioChatClient.create(token, chatClientConfig.options || {}).then((chatClient) => {
-              console.log('halo halo');
-              console.log(chatClient);
+              console.warn('halo halo');
               that.client = chatClient;
               that.client.on('tokenAboutToExpire', () => {
                 that.getToken(identity, pushChannel)
@@ -67,6 +79,13 @@ export default class ChatClientHelper {
               if (registerForPushCallback) {
                 registerForPushCallback(that.log, that.client);
               }
+
+              // that.client.getPublicChannelDescriptors().then(function (paginator) {
+              //   for (i = 0; i < paginator.items.length; i++) {
+              //     const channel = paginator.items[i];
+              //     console.warn('Channel: ' + channel.friendlyName);
+              //   }
+              // }).catch(err => { console.warn('Catch pub chan', err) });
             });
           })
           .catch((err) => {
@@ -119,7 +138,8 @@ export default class ChatClientHelper {
     this.client.on('memberLeft', obj => this.log.event('ChatClientHelper.client', 'memberLeft', obj));
     this.client.on('memberUpdated', obj => this.log.event('ChatClientHelper.client', 'memberUpdated', obj));
 
-    this.client.on('messageAdded', obj => this.log.event('ChatClientHelper.client', 'messageAdded', obj));
+    this.client.on('messageAdded', obj => { this.log.event('ChatClientHelper.client', 'messageAdded', obj);
+      console.warn(obj.author, obj.body); });
     this.client.on('messageUpdated', obj => this.log.event('ChatClientHelper.client', 'messageUpdated', obj));
     this.client.on('messageRemoved', obj => this.log.event('ChatClientHelper.client', 'messageRemoved', obj));
 
